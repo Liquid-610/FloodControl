@@ -22,6 +22,7 @@ namespace FloodContent
         Texture2D playingPieces;
         Texture2D backgroundScreen;
         Texture2D titleScreen;
+        //Texture2D Tile_Sheet;
 
              GameBoard gameBoard;
 
@@ -37,6 +38,32 @@ namespace FloodContent
             const float MinTimeSinceLastInput = 0.25f;
             float timeSinceLastInput = 0.0f;
 
+            private int DetermineScore(int SquareCount)
+            {
+                return (int)((Math.Pow((SquareCount / 5), 2) + SquareCount) * 10);
+            }
+
+        private void CheckScoringChain(List<Vector2> WaterChain)
+{
+if (WaterChain.Count > 0)
+{
+Vector2 LastPipe = WaterChain[WaterChain.Count - 1];
+if (LastPipe.X == GameBoard.GameBoardWidth - 1)
+{
+if (gameBoard.HasConnector(
+(int)LastPipe.X, (int)LastPipe.Y, "Right"))
+{
+
+    playerScore += DetermineScore(WaterChain.Count);
+    foreach (Vector2 ScoringSquare in WaterChain)
+    {
+        gameBoard.SetSquare((int)ScoringSquare.X,
+        (int)ScoringSquare.Y, "Empty");
+    }
+}
+}
+}
+}
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -125,6 +152,44 @@ namespace FloodContent
                 spriteBatch.End();
             }
 
+
+            if (gameState == GameStates.Playing)
+            {
+                spriteBatch.Begin();
+
+                spriteBatch.Draw(backgroundScreen,
+                    new Rectangle(0, 0,
+                        this.Window.ClientBounds.Width,
+                        this.Window.ClientBounds.Height), Color.White);
+                for (int x = 0; x < GameBoard.GameBoardWidth; x++)
+                    for (int y = 0; y < GameBoard.GameBoardHeight; y++)
+                    {
+                        int pixelX = (int)gameBoardDisplayOrigin.X +
+                        (x * GamePiece.PieceWidth);
+                        int pixelY = (int)gameBoardDisplayOrigin.Y +
+                        (y * GamePiece.PieceHeight);
+                        spriteBatch.Draw(
+                        playingPieces,
+                        new Rectangle(
+                        pixelX,
+                        pixelY,
+                        GamePiece.PieceWidth,
+                        GamePiece.PieceHeight),
+                        EmptyPiece,
+                        Color.White);
+                        spriteBatch.Draw(
+                        playingPieces, new Rectangle(
+                        pixelX,
+                        pixelY,
+                        GamePiece.PieceWidth,
+                        GamePiece.PieceHeight),
+                        gameBoard.GetSourceRect(x, y),
+                        Color.White);
+                    }
+                this.Window.Title = playerScore.ToString();
+
+                spriteBatch.End();
+            }
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
