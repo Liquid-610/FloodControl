@@ -23,10 +23,26 @@ namespace FloodContent
         Texture2D backgroundScreen;
         Texture2D titleScreen;
 
+             GameBoard gameBoard;
+
+            Vector2 gameBoardDisplayOrigin = new Vector2(70, 89);
+
+            int playerScore = 0;
+
+            enum GameStates { TitleScreen, Playing };
+            GameStates gameState = GameStates.TitleScreen;
+
+            Rectangle EmptyPiece = new Rectangle(1, 247, 40, 40);
+
+            const float MinTimeSinceLastInput = 0.25f;
+            float timeSinceLastInput = 0.0f;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+           
         }
 
         /// <summary>
@@ -38,6 +54,12 @@ namespace FloodContent
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
+            this.IsMouseVisible = true;
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+            graphics.ApplyChanges();
+            gameBoard = new GameBoard();
 
             base.Initialize();
         }
@@ -91,6 +113,17 @@ namespace FloodContent
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            if (gameState == GameStates.TitleScreen)
+            {
+                spriteBatch.Begin();
+                spriteBatch.Draw(titleScreen,
+                new Rectangle(0, 0,
+                this.Window.ClientBounds.Width,
+                this.Window.ClientBounds.Height),
+                Color.White);
+                spriteBatch.End();
+            }
 
             // TODO: Add your drawing code here
 
